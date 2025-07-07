@@ -313,7 +313,7 @@ impl EventHandler {
                 held,
                 alone,
                 alone_timeout,
-                tap_hold_without_timeout, //FIX: it's just a bad name!
+                free_hold,
             }) => {
                 match value {
                     PRESS => {
@@ -322,7 +322,7 @@ impl EventHandler {
                             MultiPurposeKeyState {
                                 held,
                                 alone,
-                                alone_timeout_at: if tap_hold_without_timeout {
+                                alone_timeout_at: if free_hold {
                                     None
                                 } else {
                                     Some(Instant::now() + alone_timeout)
@@ -732,10 +732,7 @@ fn is_remap(actions: &[KeymapAction]) -> bool {
         return false;
     }
 
-    actions.iter().all(|x| match x {
-        KeymapAction::Remap(..) => true,
-        _ => false,
-    })
+    actions.iter().all(|x| matches!(x, KeymapAction::Remap(..)))
 }
 
 fn with_extra_modifiers(actions: &[KeymapAction], extra_modifiers: &[Key], exact_match: bool) -> Vec<TaggedAction> {
