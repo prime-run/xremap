@@ -58,7 +58,7 @@ If you are using Fedora, xremap can be installed via this [Fedora Copr](https://
 
 ## Usage
 
-Write [a config file](#Configuration) directly, or generate it with
+Write [a config file](#configuration) directly, or generate it with
 [xremap-ruby](https://github.com/xremap/xremap-ruby) or [xremap-python](https://github.com/xremap/xremap-python).
 
 Then start the `xremap` daemon by running:
@@ -239,6 +239,8 @@ modmap:
         held: KEY_YYY # Required, also accepts arrays
         alone: KEY_ZZZ # Required, also accepts arrays
         alone_timeout_millis: 1000 # Optional
+        free_hold: false # Optional, if set to true, alone_timeout_millis will be ignored.
+        # And alone will be dispatched only if a second key wasn't pressed while held
       # Hook `keymap` action on key press/release events.
       KEY_XXX3:
         skip_key_event: true # Optional, skip original key event, defaults to false
@@ -280,6 +282,11 @@ Then press the key you want to know the name of.
 If you specify a map containing `held` and `alone`, you can use the key for two purposes.
 The key is considered `alone` if it's pressed and released within `alone_timeout_millis` (default: 1000)
 before any other key is pressed. Otherwise it's considered `held`.
+
+When `free_hold` is set to `true`, this behavior changes. The `held` action is triggered for the key as soon as another key is pressed.
+If the key is released without any other key being pressed during the hold, the `alone` action is triggered.
+This mode ignores `alone_timeout_millis` and is useful for creating a modifier key that also has a tap action. e.g., `Alt` acts as `Shift` when held,
+and can be held with no timeout and at the same time, preserve single press action. but as Escape when tapped.
 
 ### keymap
 
@@ -527,7 +534,7 @@ You can declare data that does not directly go into the config under the `shared
 This can be usefull when using Anchors and Aliases.  
 For more information about the use of Yaml anchors see the [Yaml specification](https://yaml.org/spec/1.2.2/#3222-anchors-and-aliases).
 
-#### example:
+#### example
 
 ```yaml
 shared:
